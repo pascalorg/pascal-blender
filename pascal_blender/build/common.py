@@ -186,7 +186,9 @@ def get_material(
     """Deduplicated Principled BSDF material for a resolved 6-tuple."""
     if resolved is None:
         resolved = core_materials.resolve_material(material_json, node_type)
-    key = core_materials.resolved_tuple(resolved)
+    base_key = core_materials.resolved_tuple(resolved)
+    texture_json = (material_json or {}).get("texture")
+    key = (base_key, json.dumps(texture_json, sort_keys=True) if texture_json else None)
     cached = ctx.material_cache.get(key)
     if cached is not None:
         return cached
@@ -194,26 +196,57 @@ def get_material(
     mat = bpy.data.materials.new(core_materials.material_name(material_json, resolved))
     mat.use_nodes = True
     bsdf = next(n for n in mat.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
-    r, g, b = core_materials.hex_to_linear_rgb(key[0])
-    alpha = key[3]
+    r, g, b = core_materials.hex_to_linear_rgb(base_key[0])
+    alpha = base_key[3]
     bsdf.inputs["Base Color"].default_value = (r, g, b, 1.0)
-    bsdf.inputs["Roughness"].default_value = key[1]
-    bsdf.inputs["Metallic"].default_value = key[2]
+    bsdf.inputs["Roughness"].default_value = base_key[1]
+    bsdf.inputs["Metallic"].default_value = base_key[2]
     bsdf.inputs["Alpha"].default_value = alpha
-    transparent = key[4]
+    transparent = base_key[4]
     if transparent or alpha < 1.0:
         mat.surface_render_method = "BLENDED"
-    mat.use_backface_culling = key[5] == "front"
+    mat.use_backface_culling = base_key[5] == "front"
     mat.diffuse_color = (r, g, b, alpha)
     if ctx.options.get("physical_glass") and transparent:
         bsdf.inputs["Transmission Weight"].default_value = 1.0
         bsdf.inputs["IOR"].default_value = 1.45
 
+    texture = (material_json or {}).get("texture")
+    if texture and ctx.options.get("apply_texture_field", True):
+        _wire_texture(ctx, mat, bsdf, texture)
+
     mat["pascal_material_json"] = json.dumps(material_json or {}, ensure_ascii=False)
-    mat["pascal_resolved"] = json.dumps(key)
+    mat["pascal_resolved"] = json.dumps(base_key)
     ctx.material_cache[key] = mat
     ctx.track(mat)
     return mat
+
+
+def _wire_texture(ctx: BuildContext, mat, bsdf, texture: Dict[str, Any]) -> None:
+    """material.texture (unused by the editor, honored here): UV Map ->
+    Mapping (scale = repeat * scale) -> Image Texture -> Base Color. The
+    image itself is a checker placeholder when the URL isn't fetchable."""
+    tree = mat.node_tree
+    uv = tree.nodes.new("ShaderNodeUVMap")
+    mapping = tree.nodes.new("ShaderNodeMapping")
+    tex = tree.nodes.new("ShaderNodeTexImage")
+    repeat = texture.get("repeat") or [1.0, 1.0]
+    scale = float(texture.get("scale") or 1.0)
+    mapping.inputs["Scale"].default_value = (repeat[0] * scale, repeat[1] * scale, 1.0)
+    tex.extension = "REPEAT"
+
+    url = str(texture.get("url", ""))
+    image = bpy.data.images.new(f"pascal_tex_{hash(url) & 0xFFFF:04x}", 8, 8)
+    image.generated_type = "COLOR_GRID"
+    image.source = "GENERATED"
+    image["pascal_texture_url"] = url
+    tex.image = image
+    ctx.track(image)
+    ctx.note("INFO", f"texture field {url}: placeholder image (relink manually)")
+
+    tree.links.new(uv.outputs["UV"], mapping.inputs["Vector"])
+    tree.links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+    tree.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
 
 
 def mesh_volume(obj: "bpy.types.Object", evaluated: bool = True) -> float:

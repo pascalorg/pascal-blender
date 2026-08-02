@@ -25,6 +25,21 @@ def build_walls_for_level(ctx: BuildContext, level_id: str, level: Dict[str, Any
     if not walls:
         return
 
+    def _valid(n: Dict[str, Any]) -> bool:
+        s, e = n.get("start"), n.get("end")
+        return (
+            isinstance(s, (list, tuple)) and len(s) >= 2
+            and isinstance(e, (list, tuple)) and len(e) >= 2
+        )
+
+    invalid = {cid: n for cid, n in walls.items() if not _valid(n)}
+    for wall_id, wall in invalid.items():
+        ctx.note("WARNING", f"wall {wall_id} missing start/end; data-layer anchor only")
+        _anchor_only(ctx, wall_id, wall)
+    walls = {cid: n for cid, n in walls.items() if cid not in invalid}
+    if not walls:
+        return
+
     footprints = wallnet.wall_footprints(walls)
     level_children = list(children.values())
 
