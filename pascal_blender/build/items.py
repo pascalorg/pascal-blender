@@ -59,11 +59,10 @@ def build_item(ctx: BuildContext, node_id: str, node: Dict[str, Any]) -> None:
         anchor.rotation_euler = coords.euler_to_blender(rotation)
         coll = _collection_of(ctx, parent_anchor)
     elif parent_is_ceiling and isinstance(parent_anchor, bpy.types.Object):
+        # Persisted position already encodes [x, -itemHeight, z] (spec 04
+        # §4.4) — the verbatim transform is the anchor transform.
         anchor.parent = parent_anchor
-        dims = asset.get("dimensions") or [1, 1, 1]
-        item_h = float(dims[1]) * (float(item_scale[1]) if len(item_scale) > 1 else 1.0)
-        loc = coords.loc_to_blender(position)
-        anchor.location = (loc[0], loc[1], -item_h)
+        anchor.location = coords.loc_to_blender(position)
         anchor.rotation_euler = coords.euler_to_blender(rotation)
         coll = _collection_of(ctx, parent_anchor)
     else:

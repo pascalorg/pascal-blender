@@ -59,17 +59,18 @@ def euler_to_pascal(v: Sequence[float]) -> Vec3:
 def yrot_to_blender(r: float) -> float:
     """Pascal scalar rotation about +Y -> Blender rotation about +Z.
 
-    Pascal plan [x, z] maps to Blender (x, -z): the Z flip mirrors the plane,
-    so angles reverse sign... except the editor already negates wall angles
-    (mesh rotation.y = -atan2(dz, dx)); callers pass the RAW node value and we
-    apply the single documented rule: rot_z = -r for roof/guide scalar
-    rotations, matching the design doc §3.2.
+    The axis map (x, y, z) -> (x, -z, y) is a PROPER rotation (rotX(+90°),
+    det +1), so rotations about Pascal +Y conjugate to rotations about
+    Blender +Z with the SAME sign (verified numerically: a guide plane's
+    local (1,0,0) at ry=π/2 lands at Pascal world (0,0,-1) = Blender
+    (0,1,0) = rotZ(+π/2)·(1,0,0)). Consistent with euler_to_blender's
+    middle-axis handling and with wall_angle_blender.
     """
-    return -float(r)
+    return float(r)
 
 
 def yrot_to_pascal(r: float) -> float:
-    return -float(r)
+    return float(r)
 
 
 def wall_angle_blender(start: Sequence[float], end: Sequence[float]) -> float:
