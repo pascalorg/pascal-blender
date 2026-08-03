@@ -53,6 +53,9 @@ Web speed for modeling. Blender power for everything after.
 **Tweet 5 (CTA)**
 Install: grab the zip, drag it into Blender. That's it.
 
+Want auto-updates? Add our extension repo once in Blender's preferences:
+pascalorg.github.io/pascal-blender/index.json
+
 ⬇️ https://github.com/pascalorg/pascal-blender
 Editor (also open source): https://github.com/pascalorg/editor
 
