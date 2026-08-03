@@ -55,6 +55,17 @@ class PASCAL_OT_import(bpy.types.Operator, ImportHelper):
     cdn_base: StringProperty(name="Asset CDN", default="https://editor.pascal.app")
     light_watts: FloatProperty(name="Watts per light unit", default=60.0, min=0.0)
 
+    def invoke(self, context, event):
+        # Seed per-import options from the add-on preferences.
+        from ..preferences import get_prefs
+
+        prefs = get_prefs(context)
+        if prefs is not None:
+            self.cdn_base = prefs.cdn_base
+            self.network = prefs.network
+            self.light_watts = prefs.light_watts
+        return super().invoke(context, event)
+
     def execute(self, context):
         options = {
             "bake_openings": self.bake_openings,

@@ -7,16 +7,20 @@ from __future__ import annotations
 
 
 def register():
+    from . import preferences
     from .operators import import_scene as op_import
     from .ui import panel
 
+    preferences.register()
     op_import.register()
     panel.register()
 
 
 def unregister():
+    from . import preferences
     from .operators import import_scene as op_import
     from .ui import panel
 
     panel.unregister()
     op_import.unregister()
+    preferences.unregister()
