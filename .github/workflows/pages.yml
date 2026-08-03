@@ -30,14 +30,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download all release zips
+      - name: Download the latest release zip
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p site
-          for tag in $(gh release list --json tagName --jq '.[].tagName'); do
-            gh release download "$tag" --pattern "*.zip" --dir site || true
-          done
+          # Only the latest version goes in the index — Blender resolves one
+          # entry per extension id, and older zips stay downloadable from
+          # their GitHub Releases anyway.
+          gh release download --pattern "*.zip" --dir site
           ls -la site
 
       - name: Download Blender 4.5 LTS
