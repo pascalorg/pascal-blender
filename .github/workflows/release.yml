@@ -22,7 +22,9 @@ jobs:
         run: ./blender/blender --background --factory-startup --python tests/run_headless.py
 
       - name: Build extension zip
-        run: ./blender/blender --command extension build --source-dir pascal_blender --output-dir dist
+        run: |
+          mkdir -p dist
+          ./blender/blender --command extension build --source-dir pascal_blender --output-dir dist
 
       - name: Create GitHub Release with the zip
         uses: softprops/action-gh-release@v2
