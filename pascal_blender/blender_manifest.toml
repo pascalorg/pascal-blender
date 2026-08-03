@@ -6,7 +6,7 @@ name = "Pascal Scene Importer"
 tagline = "Import Pascal editor scenes as clean, lossless Blender projects"
 maintainer = "Julien Brissonneau"
 type = "add-on"
-website = "https://github.com/julienbrs/pascal-blender"
+website = "https://github.com/pascalorg/pascal-blender"
 tags = ["Import-Export", "Scene"]
 license = ["SPDX:MIT"]
 

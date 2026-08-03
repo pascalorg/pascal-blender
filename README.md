@@ -30,12 +30,14 @@ from the `.blend` alone.
 
 Requires **Blender 4.2+** (developed and tested on 4.5 LTS).
 
-1. Build or download `pascal_blender-0.1.0.zip` (see below).
-2. Blender → Edit → Preferences → Get Extensions → ⌄ (top-right) →
-   *Install from Disk…* → pick the zip.
-3. `File → Import → Pascal Scene (.json)` — or drag a `.json` scene into the 3D viewport.
+1. Download the latest `pascal_blender-x.y.z.zip` from
+   [Releases](https://github.com/pascalorg/pascal-blender/releases).
+2. In Blender: **drag the zip into the Blender window** and click *Install* —
+   or Edit → Preferences → Get Extensions → ⌄ (top-right) → *Install from Disk…*.
+3. `File → Import → Pascal Scene (.json)` — or drag a `.json` scene straight
+   into the 3D viewport.
 
-To build the zip from this repo:
+To build the zip from source:
 
 ```sh
 /Applications/Blender.app/Contents/MacOS/Blender --command extension build \
