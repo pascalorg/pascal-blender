@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 import bpy
 
 from ..core import graph, migrations, parse, schema
-from . import cameras, collections as build_collections, cutters, datalayer, flatwork, items, openings_build, roofs, walls
+from . import cameras, collections as build_collections, cutters, datalayer, flatwork, items, openings_build, plugins, roofs, walls
 from .common import BuildContext, display_name, link_object, stamp_datalayer
 
 DEFAULT_OPTIONS: Dict[str, Any] = {
@@ -67,8 +67,16 @@ def _build(ctx: BuildContext, scene_name: str) -> None:
         "door": openings_build.build_door,
         "window": openings_build.build_window,
         "item": items.build_item,
+        "fence": plugins.build_fence,
+        "shelf": plugins.build_shelf,
+        "spawn": plugins.build_spawn,
+        "trees:tree": plugins.build_tree,
+        "trees:grass": plugins.build_grass,
     }
-    order = ["slab", "ceiling", "zone", "scan", "guide", "roof", "door", "window", "item"]
+    order = [
+        "slab", "ceiling", "zone", "scan", "guide", "roof", "door", "window",
+        "item", "fence", "shelf", "spawn", "trees:tree", "trees:grass",
+    ]
     reachable = graph.reachable_ids(ctx.nodes, ctx.scene_data.root_ids)
     for ntype in order:
         for node_id, node in _typed(ctx, ntype):

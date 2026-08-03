@@ -74,10 +74,13 @@ DEFAULT_DOOR_SEGMENTS: List[Dict[str, Any]] = [
      "dividerThickness": 0.03, "panelDepth": 0.01, "panelInset": 0.04},
 ]
 
-# Node types the importer knows how to build natively.
+# Node types the importer knows how to build natively. Namespaced kinds
+# (plugin nodes like trees:*) from plugins we don't know stay warnings, never
+# errors — matching the editor's own policy for unloaded plugins.
 KNOWN_NODE_TYPES = {
     "site", "building", "level", "wall", "item", "zone", "slab", "ceiling",
     "roof", "roof-segment", "scan", "guide", "window", "door",
+    "fence", "shelf", "spawn", "trees:tree", "trees:grass",
 }
 
 _ID_ALPHABET = string.digits + string.ascii_lowercase

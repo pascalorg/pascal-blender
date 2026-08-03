@@ -31,7 +31,7 @@ byte of the original file recoverable from the `.blend`.
 
 Or use the one-click link (drag it into Blender; it also offers to subscribe
 you to updates):
-[Install pascal_blender](https://github.com/pascalorg/pascal-blender/releases/download/v0.1.0/pascal_blender-0.1.0.zip?repository=https%3A%2F%2Fpascalorg.github.io%2Fpascal-blender%2Findex.json&blender_version_min=4.2.0)
+[Install pascal_blender](https://github.com/pascalorg/pascal-blender/releases/download/v0.2.0/pascal_blender-0.2.0.zip?repository=https%3A%2F%2Fpascalorg.github.io%2Fpascal-blender%2Findex.json&blender_version_min=4.2.0)
 
 **Auto-updates:** in Preferences → Get Extensions → Repositories → **+** →
 *Add Remote Repository* enter

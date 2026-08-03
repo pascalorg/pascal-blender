@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 
 id = "pascal_blender"
-version = "0.1.0"
+version = "0.2.0"
 name = "Pascal Scene Importer"
 tagline = "Import Pascal editor scenes as clean, lossless Blender projects"
 maintainer = "Julien Brissonneau"
