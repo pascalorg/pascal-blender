@@ -29,6 +29,7 @@ from typing import Dict, List, Optional, Tuple
 DEFAULT_WALL_THICKNESS = 0.1
 TOLERANCE = 0.001  # endpoint snap grid + T-junction distance
 EPS = 1e-9  # degenerate-length + parallel-lines epsilon
+MITER_LIMIT_FACTOR = 50.0  # max miter distance, in wall thicknesses
 
 Point = Tuple[float, float]
 
@@ -189,6 +190,15 @@ def _junction_intersections(
             continue  # parallel => skip; walls fall back to square defaults
         px = (b1 * c2 - b2 * c1) / det
         py = (a2 * c1 - a1 * c2) / det
+        # Miter limit: near-collinear walls (e.g. capture-merge slivers a few
+        # cm long) make the edge lines almost parallel and the intersection
+        # lands kilometers away. Beyond a sane multiple of the wall
+        # thickness, fall back to square caps like the parallel case.
+        limit = MITER_LIMIT_FACTOR * max(
+            _thickness(walls[w1["id"]]), _thickness(walls[w2["id"]])
+        )
+        if math.hypot(px - mx, py - my) > limit:
+            continue
         if not w1["passthrough"]:
             intersections.setdefault(w1["id"], {})["left"] = (px, py)
         if not w2["passthrough"]:

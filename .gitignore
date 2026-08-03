@@ -5,3 +5,4 @@ __pycache__/
 /tests/output/
 .DS_Store
 /asset_cache/
+tests/fixtures/real_house.json

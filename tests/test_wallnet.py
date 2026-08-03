@@ -304,3 +304,18 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def test_miter_limit_slivers():
+    """Near-collinear capture-merge slivers must not produce km-long miters."""
+    import json, os
+    fx = os.path.join(os.path.dirname(__file__), "fixtures", "sliver_walls.json")
+    walls = {k: v for k, v in json.load(open(fx))["nodes"].items() if v.get("type") == "wall"}
+    fps = wall_footprints(walls)
+    for wid, poly in fps.items():
+        for x, z in poly:
+            assert abs(x) < 20 and abs(z) < 20, f"{wid} vertex ({x}, {z}) exploded"
+    print("PASS test_miter_limit_slivers")
+
+
+test_miter_limit_slivers()
