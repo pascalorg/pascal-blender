@@ -47,15 +47,11 @@ def build_item(ctx: BuildContext, node_id: str, node: Dict[str, Any]) -> None:
             side_push = -(thickness / 2.0) * sign  # Pascal +z front -> Blender -y
         coll = _collection_of(ctx, parent_anchor)
     elif parent_is_item and isinstance(parent_anchor, bpy.types.Object):
+        # Surface placement: the persisted position[1] ALREADY equals
+        # surface.height * parentScale[1] (spec 04 §4.4) — the verbatim
+        # transform is the anchor transform, nothing to add.
         anchor.parent = parent_anchor
-        surface_h = 0.0
-        parent_asset = parent_node.get("asset") or {}
-        if isinstance(parent_asset.get("surface"), dict):
-            surface_h = float(parent_asset["surface"].get("height", 0.0))
-            parent_scale = schema.get(parent_node, "scale", [1, 1, 1])
-            surface_h *= float(parent_scale[1]) if len(parent_scale) > 1 else 1.0
-        loc = coords.loc_to_blender(position)
-        anchor.location = (loc[0], loc[1], loc[2] + surface_h)
+        anchor.location = coords.loc_to_blender(position)
         anchor.rotation_euler = coords.euler_to_blender(rotation)
         coll = _collection_of(ctx, parent_anchor)
     elif parent_is_ceiling and isinstance(parent_anchor, bpy.types.Object):

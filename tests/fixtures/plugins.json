@@ -203,8 +203,104 @@
         "grass_plug0000000001",
         "grass_plug0000000002",
         "grass_plug0000000003",
-        "hologram_plug0000001"
+        "hologram_plug0000001",
+        "item_surfparent00001",
+        "column_plug00000001"
       ]
+    },
+    "item_surfparent00001": {
+      "object": "node",
+      "id": "item_surfparent00001",
+      "type": "item",
+      "parentId": "level_plug000000001",
+      "visible": true,
+      "metadata": {},
+      "position": [
+        5,
+        0,
+        5
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "children": [
+        "item_surfchild000001"
+      ],
+      "asset": {
+        "id": "test-table",
+        "category": "furniture",
+        "name": "Table",
+        "thumbnail": "/t.webp",
+        "src": "asset://none",
+        "dimensions": [
+          1.2,
+          0.75,
+          0.6
+        ],
+        "surface": {
+          "height": 0.75
+        }
+      }
+    },
+    "item_surfchild000001": {
+      "object": "node",
+      "id": "item_surfchild000001",
+      "type": "item",
+      "parentId": "item_surfparent00001",
+      "visible": true,
+      "metadata": {},
+      "position": [
+        0.1,
+        0.75,
+        0.05
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "asset": {
+        "id": "test-cup",
+        "category": "decor",
+        "name": "Cup",
+        "thumbnail": "/c.webp",
+        "src": "asset://none",
+        "dimensions": [
+          0.1,
+          0.12,
+          0.1
+        ]
+      }
+    },
+    "column_plug00000001": {
+      "object": "node",
+      "id": "column_plug00000001",
+      "type": "column",
+      "parentId": "level_plug000000001",
+      "visible": true,
+      "metadata": {},
+      "position": [
+        9,
+        0,
+        9
+      ],
+      "rotation": 0,
+      "width": 0.12,
+      "depth": 0.12,
+      "height": 2.34,
+      "radius": 0.22
     }
   },
   "rootNodeIds": [

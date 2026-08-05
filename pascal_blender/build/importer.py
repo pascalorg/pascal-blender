@@ -67,6 +67,7 @@ def _build(ctx: BuildContext, scene_name: str) -> None:
         "door": openings_build.build_door,
         "window": openings_build.build_window,
         "item": items.build_item,
+        "column": plugins.build_column,
         "fence": plugins.build_fence,
         "shelf": plugins.build_shelf,
         "spawn": plugins.build_spawn,
@@ -75,11 +76,14 @@ def _build(ctx: BuildContext, scene_name: str) -> None:
     }
     order = [
         "slab", "ceiling", "zone", "scan", "guide", "roof", "door", "window",
-        "item", "fence", "shelf", "spawn", "trees:tree", "trees:grass",
+        "item", "column", "fence", "shelf", "spawn", "trees:tree", "trees:grass",
     ]
     reachable = graph.reachable_ids(ctx.nodes, ctx.scene_data.root_ids)
     for ntype in order:
-        for node_id, node in _typed(ctx, ntype):
+        typed = _typed(ctx, ntype)
+        if ntype == "item":
+            typed = _items_parents_first(ctx, typed)
+        for node_id, node in typed:
             if node_id not in reachable or node_id in ctx.anchors:
                 continue
             try:
@@ -128,6 +132,27 @@ def _typed(ctx: BuildContext, ntype: str):
         (nid, n) for nid, n in ctx.nodes.items()
         if isinstance(n, dict) and n.get("type") == ntype
     ]
+
+
+def _items_parents_first(ctx: BuildContext, items):
+    """Order items so surface parents build before the items resting on
+    them (a surface item parented to a not-yet-built item would silently
+    fall back to level parenting and float at the wrong height)."""
+    by_id = dict(items)
+    ordered, seen = [], set()
+
+    def visit(nid):
+        if nid in seen or nid not in by_id:
+            return
+        seen.add(nid)
+        parent_id = by_id[nid].get("parentId")
+        if isinstance(parent_id, str) and parent_id in by_id:
+            visit(parent_id)
+        ordered.append((nid, by_id[nid]))
+
+    for nid, _ in items:
+        visit(nid)
+    return ordered
 
 
 def _fallback_anchor(ctx: BuildContext, node_id: str, node: Dict[str, Any], unhandled: bool = False) -> None:

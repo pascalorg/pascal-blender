@@ -80,7 +80,7 @@ DEFAULT_DOOR_SEGMENTS: List[Dict[str, Any]] = [
 KNOWN_NODE_TYPES = {
     "site", "building", "level", "wall", "item", "zone", "slab", "ceiling",
     "roof", "roof-segment", "scan", "guide", "window", "door",
-    "fence", "shelf", "spawn", "trees:tree", "trees:grass",
+    "column", "fence", "shelf", "spawn", "trees:tree", "trees:grass",
 }
 
 _ID_ALPHABET = string.digits + string.ascii_lowercase

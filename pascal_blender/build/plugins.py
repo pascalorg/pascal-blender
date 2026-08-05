@@ -77,6 +77,41 @@ def _solid_material(ctx: BuildContext, hex_color: str, roughness: float = 0.8):
     })
 
 
+def build_column(ctx: BuildContext, node_id: str, node: Dict[str, Any]) -> None:
+    """Structural column: cylinder when radius is set, else width x depth box."""
+    import bmesh
+
+    height = float(schema.get(node, "height", 2.5))
+    radius = node.get("radius")
+    mesh = bpy.data.meshes.new(f"column {node_id[-4:]}")
+    bm = bmesh.new()
+    if radius:
+        bmesh.ops.create_cone(
+            bm, cap_ends=True, segments=24,
+            radius1=float(radius), radius2=float(radius), depth=height,
+        )
+        bmesh.ops.translate(bm, vec=(0, 0, height / 2), verts=bm.verts[:])
+    else:
+        w = float(schema.get(node, "width", 0.2))
+        d = float(schema.get(node, "depth", 0.2))
+        bmesh.ops.create_cube(bm, size=1.0)
+        bmesh.ops.scale(bm, vec=(w, d, height), verts=bm.verts[:])
+        bmesh.ops.translate(bm, vec=(0, 0, height / 2), verts=bm.verts[:])
+    bm.to_mesh(mesh)
+    bm.free()
+    ctx.track(mesh)
+
+    obj = bpy.data.objects.new(display_name(node), mesh)
+    obj.data.materials.append(get_material(ctx, node.get("material"), "wall"))
+    obj.location = coords.loc_to_blender(schema.get(node, "position", [0, 0, 0]))
+    rotation = schema.get(node, "rotation", 0)
+    if isinstance(rotation, (int, float)):
+        obj.rotation_euler = (0, 0, coords.yrot_to_blender(float(rotation)))
+    else:
+        obj.rotation_euler = coords.euler_to_blender(rotation)
+    _place_and_finish(ctx, node_id, node, obj, {"height": height})
+
+
 def build_fence(ctx: BuildContext, node_id: str, node: Dict[str, Any]) -> None:
     boxes = plugin_geometry.fence_parts(node)
     if not boxes:
